@@ -195,10 +195,11 @@ false` so they appear in future autocomplete, ranked by `usage_count`.
   by patient name (not bed/location). Pick date → quick-log sheet with
   `entry_date` = chosen date, `is_backfill = true`. Does not affect today's
   staleness sort for other cases.
-- **Evening nudge:** local push ~8–9pm (configurable) if any active case
-  has no entry with `entry_date = today`. Tap opens Home filtered to
-  unlogged-only. *(Notification permission/implementation details not yet
-  pinned down — ask before building.)*
+- **Evening nudge:** real Web Push at **5pm IST (OPD closure time)** daily
+  if any active case has no entry with `entry_date = today`. Tap opens
+  Home filtered to unlogged-only. Implemented via a Supabase Cron Job
+  triggering an Edge Function — see the "Evening nudge (resolved)" section
+  below for the full mechanism.
 
 ## Mode 2 — OPD Quick Log (behavior summary)
 

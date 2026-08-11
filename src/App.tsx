@@ -6,6 +6,7 @@ import { ensureComplicationTypesSeeded } from './lib/db/seed'
 import { CasesHome } from './features/cases/CasesHome'
 import { OpdHome } from './features/opd/OpdHome'
 import { ExportScreen } from './features/export/ExportScreen'
+import { EnableNudgeBanner } from './features/push/EnableNudgeBanner'
 
 type Mode = 'cases' | 'opd' | 'export'
 
@@ -63,6 +64,7 @@ function App() {
           Sign out
         </button>
       </nav>
+      <EnableNudgeBanner userId={session.user.id} />
       {mode === 'cases' && <CasesHome userId={session.user.id} />}
       {mode === 'opd' && <OpdHome userId={session.user.id} />}
       {mode === 'export' && <ExportScreen userId={session.user.id} />}
