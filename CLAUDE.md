@@ -224,6 +224,7 @@ diagnosis/procedure, findings/outcome, complications.
 ```
 src/
   features/
+    auth/        # single email/password login screen, session gating
     cases/       # Mode 1: active cases, quick-log, discharge, recall
     opd/         # Mode 2: type picker, per-type forms, GDM follow-ups
     export/      # fellowship export screen
@@ -253,15 +254,21 @@ src/
   device, single user — revisit only if a second device is ever added)
 - No bed/ward location tracking (explicitly rejected — too unstable)
 
-## Open items — ask before building
+## Auth (resolved)
 
-- **Supabase project not yet created.** No project URL/anon key exists
-  yet. Setting this up (project, RLS policies, first auth user) is an
-  outstanding first step, not an assumed given — confirm with the user
-  before wiring env vars or committing any credentials.
-- **PWA icon assets** not yet designed — ask for source art or generate
-  placeholders and confirm before shipping a manifest.
-- **Evening nudge notification mechanism** (Notification API permission
-  flow, whether it needs a service worker push vs. a local timer while the
-  app is foregrounded) is not detailed in the spec — clarify the intended
-  behavior before implementing.
+Single account only, created directly (not via a signup form) —
+`disable_signup` is set `true` on the Supabase project, so
+`src/features/auth/AuthScreen.tsx` is sign-in only. If a second device or
+a password reset is ever needed, create/update the user directly via the
+Supabase dashboard or Auth Admin API — do not re-enable public signup
+without asking first, since that reopens account creation to anyone
+holding the anon key.
+
+## Resolved open items
+
+- **PWA icon**: kept as the placeholder navy square (`public/pwa-icon.svg`)
+  by user choice — swap anytime, it's a one-file change, not blocking.
+- **Evening nudge**: real Web Push (VAPID + service worker push handler +
+  a scheduled Supabase Edge Function), not a foreground-only timer — user
+  confirmed it needs to fire even if the PWA is fully closed. Being built
+  as its own phase (`push_subscriptions` table, Edge Function, Cron Job).
