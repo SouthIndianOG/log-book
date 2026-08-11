@@ -4,7 +4,7 @@ import { BottomSheet } from '../../components/BottomSheet'
 import { db } from '../../lib/db/schema'
 import { createRecord } from '../../lib/sync/outbox'
 import { upsertComplicationType } from './complicationTypes'
-import { daysBetween, todayISO } from './helpers'
+import { daysBetween, todayISO } from '../../lib/date'
 import type { Case } from '../../lib/db/types'
 
 export function QuickLogSheet({

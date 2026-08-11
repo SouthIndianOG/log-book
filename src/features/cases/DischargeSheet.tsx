@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { BottomSheet } from '../../components/BottomSheet'
 import { updateRecord } from '../../lib/sync/outbox'
-import { todayISO } from './helpers'
+import { todayISO } from '../../lib/date'
 import type { Case } from '../../lib/db/types'
 
 export function DischargeSheet({ activeCase, onClose }: { activeCase: Case; onClose: () => void }) {

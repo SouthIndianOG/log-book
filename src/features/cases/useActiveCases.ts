@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../../lib/db/schema'
-import { daysBetween, todayISO } from './helpers'
+import { daysBetween, todayISO } from '../../lib/date'
 import type { Case, CaseEntry } from '../../lib/db/types'
 
 export interface ActiveCaseRow {

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { BottomSheet } from '../../components/BottomSheet'
 import { createRecord } from '../../lib/sync/outbox'
-import { todayISO } from './helpers'
+import { todayISO } from '../../lib/date'
 
 export function NewCaseSheet({ userId, onClose }: { userId: string; onClose: () => void }) {
   const [patientName, setPatientName] = useState('')

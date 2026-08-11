@@ -4,7 +4,7 @@ import { QuickLogSheet } from './QuickLogSheet'
 import { DischargeSheet } from './DischargeSheet'
 import { NewCaseSheet } from './NewCaseSheet'
 import { RecallSheet } from './RecallSheet'
-import { formatRelativeTime } from './helpers'
+import { formatRelativeTime } from '../../lib/date'
 import type { Case } from '../../lib/db/types'
 
 type SheetState =
@@ -14,7 +14,7 @@ type SheetState =
   | { type: 'recall' }
   | null
 
-export function CasesHome({ userId, onSignOut }: { userId: string; onSignOut: () => void }) {
+export function CasesHome({ userId }: { userId: string }) {
   const rows = useActiveCases()
   const [sheet, setSheet] = useState<SheetState>(null)
   const [unloggedOnly, setUnloggedOnly] = useState(false)
@@ -25,29 +25,24 @@ export function CasesHome({ userId, onSignOut }: { userId: string; onSignOut: ()
 
   return (
     <div className="min-h-svh bg-white pb-24">
-      <header className="sticky top-0 bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between">
+      <header className="border-b border-neutral-200 px-4 py-3 flex items-center justify-between">
         <div>
           <h1 className="text-base font-medium text-neutral-900">Active Cases</h1>
           <p className="text-sm text-neutral-500">
             {loggedCount}/{totalCount} logged today
           </p>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <button
-            type="button"
-            onClick={() => setUnloggedOnly((v) => !v)}
-            className={`text-sm px-3 py-1.5 rounded-full border ${
-              unloggedOnly
-                ? 'bg-neutral-900 text-white border-neutral-900'
-                : 'border-neutral-300 text-neutral-600'
-            }`}
-          >
-            Unlogged only
-          </button>
-          <button type="button" onClick={onSignOut} className="text-xs text-neutral-400 underline">
-            Sign out
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setUnloggedOnly((v) => !v)}
+          className={`text-sm px-3 py-1.5 rounded-full border ${
+            unloggedOnly
+              ? 'bg-neutral-900 text-white border-neutral-900'
+              : 'border-neutral-300 text-neutral-600'
+          }`}
+        >
+          Unlogged only
+        </button>
       </header>
 
       <ul>
