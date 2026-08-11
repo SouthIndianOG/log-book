@@ -37,8 +37,11 @@ needed for v1.
 - `vite.config.ts` **must** set `base: '/log-book/'` to match GitHub
   Pages' subpath serving. If the repo is ever renamed, this must be updated
   in lockstep or the deployed app 404s on all assets.
-- Private repo is fine — Pages-from-Actions works free on private repos, no
-  paid plan required.
+- Repo is **public** — GitHub Pages requires either a public repo or a paid
+  plan for private-repo Pages on personal accounts (confirmed against the
+  actual account; the original assumption that private repos got free Pages
+  was wrong). No patient data lives in the repo (that's in Supabase/local
+  IndexedDB only), so a public repo is fine — only app source is visible.
 - Workflow needs `permissions: pages: write, id-token: write`.
 - Because the app is offline-first via a service worker, use a
   cache-busting/versioned build (`vite-plugin-pwa` handles this) so a new
