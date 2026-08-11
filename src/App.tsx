@@ -5,8 +5,9 @@ import { supabase } from './lib/supabase/client'
 import { ensureComplicationTypesSeeded } from './lib/db/seed'
 import { CasesHome } from './features/cases/CasesHome'
 import { OpdHome } from './features/opd/OpdHome'
+import { ExportScreen } from './features/export/ExportScreen'
 
-type Mode = 'cases' | 'opd'
+type Mode = 'cases' | 'opd' | 'export'
 
 function App() {
   const { session, loading } = useSession()
@@ -47,13 +48,24 @@ function App() {
         </button>
         <button
           type="button"
+          onClick={() => setMode('export')}
+          className={`flex-1 py-3 text-sm font-medium border-b-2 ${
+            mode === 'export' ? 'text-neutral-900 border-neutral-900' : 'text-neutral-400 border-transparent'
+          }`}
+        >
+          Export
+        </button>
+        <button
+          type="button"
           onClick={() => supabase.auth.signOut()}
           className="px-3 text-xs text-neutral-400 underline shrink-0"
         >
           Sign out
         </button>
       </nav>
-      {mode === 'cases' ? <CasesHome userId={session.user.id} /> : <OpdHome userId={session.user.id} />}
+      {mode === 'cases' && <CasesHome userId={session.user.id} />}
+      {mode === 'opd' && <OpdHome userId={session.user.id} />}
+      {mode === 'export' && <ExportScreen userId={session.user.id} />}
     </div>
   )
 }
