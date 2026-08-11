@@ -3,6 +3,7 @@ import { AuthScreen } from './features/auth/AuthScreen'
 import { useSession } from './features/auth/useSession'
 import { supabase } from './lib/supabase/client'
 import { ensureComplicationTypesSeeded } from './lib/db/seed'
+import { CasesHome } from './features/cases/CasesHome'
 
 function App() {
   const { session, loading } = useSession()
@@ -19,19 +20,7 @@ function App() {
     return <AuthScreen />
   }
 
-  return (
-    <div className="min-h-svh flex flex-col items-center justify-center gap-4 bg-white text-neutral-900">
-      <p className="text-lg">Fellowship Case Logbook</p>
-      <p className="text-sm text-neutral-500">{session.user.email}</p>
-      <button
-        type="button"
-        onClick={() => supabase.auth.signOut()}
-        className="text-sm text-neutral-500 underline"
-      >
-        Sign out
-      </button>
-    </div>
-  )
+  return <CasesHome userId={session.user.id} onSignOut={() => supabase.auth.signOut()} />
 }
 
 export default App
