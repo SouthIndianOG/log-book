@@ -34,9 +34,13 @@ needed for v1.
 ## Deploy specifics
 
 - **Repo name:** `log-book`
-- `vite.config.ts` **must** set `base: '/log-book/'` to match GitHub
-  Pages' subpath serving. If the repo is ever renamed, this must be updated
-  in lockstep or the deployed app 404s on all assets.
+- **Custom domain:** `logbook.southindianog.com` (Cloudflare DNS, CNAME →
+  `southindianog.github.io`, DNS-only/unproxied so GitHub can issue its own
+  HTTPS cert — can switch to proxied later once confirmed working). Because
+  a custom domain serves from root, `vite.config.ts` sets `base: '/'` (not
+  a repo-name subpath), and `public/CNAME` contains the domain so GitHub
+  Pages knows which repo owns it — both must stay in sync if the domain
+  ever changes.
 - Repo is **public** — GitHub Pages requires either a public repo or a paid
   plan for private-repo Pages on personal accounts (confirmed against the
   actual account; the original assumption that private repos got free Pages
