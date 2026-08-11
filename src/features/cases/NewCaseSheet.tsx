@@ -41,8 +41,12 @@ export function NewCaseSheet({ userId, onClose }: { userId: string; onClose: () 
       <h2 className="text-base font-medium text-neutral-900 mb-4">New case</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block text-sm text-neutral-600 mb-1">Patient name</label>
+          <label htmlFor="new-case-patient-name" className="block text-sm text-neutral-600 mb-1">
+            Patient name
+          </label>
           <input
+            id="new-case-patient-name"
+            name="patientName"
             required
             value={patientName}
             onChange={(e) => setPatientName(e.target.value)}
@@ -50,32 +54,48 @@ export function NewCaseSheet({ userId, onClose }: { userId: string; onClose: () 
           />
         </div>
         <div>
-          <label className="block text-sm text-neutral-600 mb-1">Patient ref (optional)</label>
+          <label htmlFor="new-case-patient-ref" className="block text-sm text-neutral-600 mb-1">
+            Patient ref (optional)
+          </label>
           <input
+            id="new-case-patient-ref"
+            name="patientRef"
             value={patientRef}
             onChange={(e) => setPatientRef(e.target.value)}
             className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-base"
           />
         </div>
         <div>
-          <label className="block text-sm text-neutral-600 mb-1">Diagnosis</label>
+          <label htmlFor="new-case-diagnosis" className="block text-sm text-neutral-600 mb-1">
+            Diagnosis
+          </label>
           <input
+            id="new-case-diagnosis"
+            name="diagnosis"
             value={diagnosis}
             onChange={(e) => setDiagnosis(e.target.value)}
             className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-base"
           />
         </div>
         <div>
-          <label className="block text-sm text-neutral-600 mb-1">Procedure</label>
+          <label htmlFor="new-case-procedure" className="block text-sm text-neutral-600 mb-1">
+            Procedure
+          </label>
           <input
+            id="new-case-procedure"
+            name="procedure"
             value={procedure}
             onChange={(e) => setProcedure(e.target.value)}
             className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-base"
           />
         </div>
         <div>
-          <label className="block text-sm text-neutral-600 mb-1">Admit date</label>
+          <label htmlFor="new-case-admit-date" className="block text-sm text-neutral-600 mb-1">
+            Admit date
+          </label>
           <input
+            id="new-case-admit-date"
+            name="admitDate"
             type="date"
             required
             value={admitDate}
@@ -84,8 +104,12 @@ export function NewCaseSheet({ userId, onClose }: { userId: string; onClose: () 
           />
         </div>
         <div>
-          <label className="block text-sm text-neutral-600 mb-1">Fellowship tag (optional)</label>
+          <label htmlFor="new-case-fellowship-tag" className="block text-sm text-neutral-600 mb-1">
+            Fellowship tag (optional)
+          </label>
           <input
+            id="new-case-fellowship-tag"
+            name="fellowshipTag"
             value={fellowshipTag}
             onChange={(e) => setFellowshipTag(e.target.value)}
             className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-base"

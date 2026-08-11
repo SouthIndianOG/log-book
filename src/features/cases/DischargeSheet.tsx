@@ -28,8 +28,12 @@ export function DischargeSheet({ activeCase, onClose }: { activeCase: Case; onCl
       <h2 className="text-base font-medium text-neutral-900 mb-1">Discharge {activeCase.patient_name}</h2>
       <form onSubmit={handleSubmit} className="space-y-3 mt-3">
         <div>
-          <label className="block text-sm text-neutral-600 mb-1">Discharge date</label>
+          <label htmlFor="discharge-date" className="block text-sm text-neutral-600 mb-1">
+            Discharge date
+          </label>
           <input
+            id="discharge-date"
+            name="dischargeDate"
             type="date"
             required
             value={dischargeDate}
@@ -38,8 +42,12 @@ export function DischargeSheet({ activeCase, onClose }: { activeCase: Case; onCl
           />
         </div>
         <div>
-          <label className="block text-sm text-neutral-600 mb-1">Outcome</label>
+          <label htmlFor="discharge-outcome" className="block text-sm text-neutral-600 mb-1">
+            Outcome
+          </label>
           <textarea
+            id="discharge-outcome"
+            name="outcome"
             value={outcome}
             onChange={(e) => setOutcome(e.target.value)}
             rows={2}
@@ -47,8 +55,12 @@ export function DischargeSheet({ activeCase, onClose }: { activeCase: Case; onCl
           />
         </div>
         <div>
-          <label className="block text-sm text-neutral-600 mb-1">Follow-up plan</label>
+          <label htmlFor="discharge-followup" className="block text-sm text-neutral-600 mb-1">
+            Follow-up plan
+          </label>
           <textarea
+            id="discharge-followup"
+            name="followup"
             value={followup}
             onChange={(e) => setFollowup(e.target.value)}
             rows={2}

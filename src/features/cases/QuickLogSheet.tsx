@@ -108,8 +108,12 @@ export function QuickLogSheet({
       ) : (
         <div className="mt-4 space-y-3">
           <div>
-            <label className="block text-sm text-neutral-600 mb-1">Note</label>
+            <label htmlFor="quicklog-note" className="block text-sm text-neutral-600 mb-1">
+              Note
+            </label>
             <textarea
+              id="quicklog-note"
+              name="note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={3}
@@ -117,8 +121,12 @@ export function QuickLogSheet({
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-600 mb-1">Complication</label>
+            <label htmlFor="quicklog-complication" className="block text-sm text-neutral-600 mb-1">
+              Complication
+            </label>
             <input
+              id="quicklog-complication"
+              name="complication"
               list="complication-suggestions"
               value={complication}
               onChange={(e) => setComplication(e.target.value)}
@@ -132,8 +140,12 @@ export function QuickLogSheet({
           </div>
           {complication.trim() && (
             <div>
-              <label className="block text-sm text-neutral-600 mb-1">Complication detail</label>
+              <label htmlFor="quicklog-complication-detail" className="block text-sm text-neutral-600 mb-1">
+                Complication detail
+              </label>
               <textarea
+                id="quicklog-complication-detail"
+                name="complicationDetail"
                 value={complicationDetail}
                 onChange={(e) => setComplicationDetail(e.target.value)}
                 rows={2}
@@ -142,8 +154,12 @@ export function QuickLogSheet({
             </div>
           )}
           <div>
-            <label className="block text-sm text-neutral-600 mb-1">Photo (optional)</label>
+            <label htmlFor="quicklog-photo" className="block text-sm text-neutral-600 mb-1">
+              Photo (optional)
+            </label>
             <input
+              id="quicklog-photo"
+              name="photo"
               type="file"
               accept="image/*"
               capture="environment"

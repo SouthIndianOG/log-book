@@ -27,8 +27,12 @@ export function RecallSheet({
         <h2 className="text-base font-medium text-neutral-900 mb-4">
           Log earlier visit — {selected.patient_name}
         </h2>
-        <label className="block text-sm text-neutral-600 mb-1">Visit date</label>
+        <label htmlFor="recall-entry-date" className="block text-sm text-neutral-600 mb-1">
+          Visit date
+        </label>
         <input
+          id="recall-entry-date"
+          name="entryDate"
           type="date"
           value={entryDate}
           max={todayISO()}
@@ -49,7 +53,12 @@ export function RecallSheet({
   return (
     <BottomSheet onClose={onClose}>
       <h2 className="text-base font-medium text-neutral-900 mb-4">Log earlier visit</h2>
+      <label htmlFor="recall-search" className="sr-only">
+        Search patient name
+      </label>
       <input
+        id="recall-search"
+        name="search"
         autoFocus
         placeholder="Search patient name"
         value={query}
