@@ -2,6 +2,12 @@ export function todayISO(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
+export function addDaysISO(baseISODate: string, days: number): string {
+  const date = new Date(baseISODate + 'T00:00:00Z')
+  date.setUTCDate(date.getUTCDate() + days)
+  return date.toISOString().slice(0, 10)
+}
+
 export function daysBetween(fromISODate: string, toISODate: string): number {
   const from = new Date(fromISODate + 'T00:00:00Z').getTime()
   const to = new Date(toISODate + 'T00:00:00Z').getTime()

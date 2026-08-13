@@ -1,21 +1,27 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../../lib/db/schema'
-import type { OpdEntry } from '../../lib/db/types'
+import type { OpdEntry, SurgicalRole } from '../../lib/db/types'
 
 export interface ExportRow {
   date: string
-  caseType: 'inpatient' | 'opd'
+  mode: 'Inpatient' | 'OPD'
   patientRef: string
-  diagnosisProcedure: string
+  patientName: string
+  patientAge: string
+  diagnosis: string
+  procedure: string
+  role: SurgicalRole | 'n/a'
+  fellowshipTag: string
   findingsOutcome: string
   complications: string
-  fellowshipTag: string
+  hpeStatus: string
 }
 
 export interface ExportFilters {
   from: string
   to: string
   caseType: 'all' | 'inpatient' | 'opd'
+  role: 'all' | SurgicalRole
   procedureQuery: string
   fellowshipTag: string
 }
@@ -25,25 +31,53 @@ const OPD_LABELS: Record<string, string> = {
   mtp: 'MTP',
   contraception: 'Contraception',
   gdm: 'GDM',
-  other: 'Other',
+  ectopic_hcg: 'Ectopic hCG Tracker',
+  other: 'Other OPD Consult',
 }
 
 function opdFindings(entry: OpdEntry): string {
   switch (entry.procedure_type) {
     case 'usg':
-      return entry.usg_findings ?? ''
+      return [
+        entry.usg_scan_type,
+        entry.gestational_age ? `GA: ${entry.gestational_age}` : null,
+        entry.usg_efw ? `EFW: ${entry.usg_efw}g` : null,
+        entry.usg_afi ? `AFI: ${entry.usg_afi}cm` : null,
+        entry.usg_findings,
+      ]
+        .filter(Boolean)
+        .join(' | ')
     case 'mtp':
-      return entry.mtp_method ?? ''
+      return [entry.mtp_method, entry.mtp_indication ? `Indication: ${entry.mtp_indication}` : null]
+        .filter(Boolean)
+        .join(' — ')
     case 'contraception':
-      return [entry.contraception_method, entry.contraception_notes].filter(Boolean).join(' — ')
+      return [
+        entry.contraception_method,
+        entry.contraception_action,
+        entry.contraception_due_date ? `Due: ${entry.contraception_due_date}` : null,
+        entry.contraception_notes,
+      ]
+        .filter(Boolean)
+        .join(' — ')
     case 'gdm':
       return [
         entry.gdm_visit_type,
-        entry.gdm_fasting_value != null ? `F:${entry.gdm_fasting_value}` : null,
-        entry.gdm_pp_value != null ? `PP:${entry.gdm_pp_value}` : null,
+        entry.gdm_fasting_value != null ? `Fasting: ${entry.gdm_fasting_value}` : null,
+        entry.gdm_pp_value != null ? `PP: ${entry.gdm_pp_value}` : null,
+        entry.gdm_management,
       ]
         .filter(Boolean)
-        .join(' ')
+        .join(' | ')
+    case 'ectopic_hcg':
+      return [
+        `Day ${entry.ectopic_day_num ?? 1}`,
+        entry.ectopic_hcg_value != null ? `hCG: ${entry.ectopic_hcg_value} mIU/mL` : null,
+        entry.ectopic_mgmt_type,
+        entry.ectopic_symptoms,
+      ]
+        .filter(Boolean)
+        .join(' | ')
     case 'other':
       return entry.other_description ?? ''
     default:
@@ -51,48 +85,56 @@ function opdFindings(entry: OpdEntry): string {
   }
 }
 
-// Unifies case_entries (joined to their parent case) and opd_entries into
-// one exportable row shape per CLAUDE.md's Export column spec. "Procedure
-// contains" matches against the same displayed diagnosis/procedure text
-// for both sources — inpatient's procedure is free text, OPD's is a clean
-// enum, so a substring filter works uniformly for both instead of needing
-// separate filter UIs.
 export function useExportRows(userId: string, filters: ExportFilters): ExportRow[] | undefined {
   return useLiveQuery(async () => {
     const rows: ExportRow[] = []
 
     if (filters.caseType !== 'opd') {
       const cases = await db.cases.where('user_id').equals(userId).toArray()
-      const casesById = new Map(cases.map((c) => [c.id, c]))
-      const entries = await db.case_entries.where('user_id').equals(userId).toArray()
-      for (const entry of entries) {
-        const parent = casesById.get(entry.case_id)
-        if (!parent) continue
+
+      for (const c of cases) {
+        // If filtering by surgical role
+        if (filters.role !== 'all' && c.role !== filters.role) continue
+
         rows.push({
-          date: entry.entry_date,
-          caseType: 'inpatient',
-          patientRef: parent.patient_ref ?? '',
-          diagnosisProcedure: parent.diagnosis || parent.procedure || '',
-          findingsOutcome: entry.is_stable_quicklog ? 'Stable, no complaints' : (entry.note ?? ''),
-          complications: entry.complication_type
-            ? `${entry.complication_type}${entry.complication_detail ? ': ' + entry.complication_detail : ''}`
-            : '',
-          fellowshipTag: parent.fellowship_tag ?? '',
+          date: c.admit_date,
+          mode: 'Inpatient',
+          patientRef: c.patient_ref ?? '',
+          patientName: c.patient_name,
+          patientAge: c.patient_age ? `${c.patient_age}` : '',
+          diagnosis: c.diagnosis ?? '',
+          procedure: c.procedure ?? '',
+          role: c.role ?? 'performed',
+          fellowshipTag: c.fellowship_tag ?? '',
+          findingsOutcome: [
+            c.discharge_condition ? `Discharged (${c.discharge_condition})` : c.status,
+            c.discharge_outcome,
+            c.discharge_followup ? `Followup: ${c.discharge_followup}` : null,
+          ]
+            .filter(Boolean)
+            .join(' — '),
+          complications: '',
+          hpeStatus: c.hpe_status === 'pending' ? 'Pending' : c.hpe_status === 'received' ? c.hpe_notes || 'Received' : 'N/A',
         })
       }
     }
 
-    if (filters.caseType !== 'inpatient') {
+    if (filters.caseType !== 'inpatient' && filters.role === 'all') {
       const opdEntries = await db.opd_entries.where('user_id').equals(userId).toArray()
       for (const entry of opdEntries) {
         rows.push({
           date: entry.entry_date,
-          caseType: 'opd',
+          mode: 'OPD',
           patientRef: entry.patient_ref ?? '',
-          diagnosisProcedure: OPD_LABELS[entry.procedure_type] ?? entry.procedure_type,
-          findingsOutcome: opdFindings(entry),
-          complications: entry.procedure_type === 'mtp' ? (entry.mtp_complication ?? '') : '',
+          patientName: entry.patient_name,
+          patientAge: entry.patient_age ? `${entry.patient_age}` : '',
+          diagnosis: OPD_LABELS[entry.procedure_type] ?? entry.procedure_type,
+          procedure: entry.procedure_type === 'other' ? entry.other_description || 'Consult' : OPD_LABELS[entry.procedure_type],
+          role: 'n/a',
           fellowshipTag: entry.fellowship_tag ?? '',
+          findingsOutcome: opdFindings(entry),
+          complications: entry.procedure_type === 'mtp' ? entry.mtp_complication ?? '' : '',
+          hpeStatus: entry.hpe_status === 'pending' ? 'Pending' : entry.hpe_status === 'received' ? entry.hpe_notes || 'Received' : 'N/A',
         })
       }
     }
@@ -103,12 +145,15 @@ export function useExportRows(userId: string, filters: ExportFilters): ExportRow
     const filtered = rows.filter((r) => {
       if (filters.from && r.date < filters.from) return false
       if (filters.to && r.date > filters.to) return false
-      if (procedureQuery && !r.diagnosisProcedure.toLowerCase().includes(procedureQuery)) return false
+      if (procedureQuery) {
+        const combined = `${r.diagnosis} ${r.procedure}`.toLowerCase()
+        if (!combined.includes(procedureQuery)) return false
+      }
       if (fellowshipTag && !r.fellowshipTag.toLowerCase().includes(fellowshipTag)) return false
       return true
     })
 
     filtered.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
     return filtered
-  }, [userId, filters.from, filters.to, filters.caseType, filters.procedureQuery, filters.fellowshipTag])
+  }, [userId, filters.from, filters.to, filters.caseType, filters.role, filters.procedureQuery, filters.fellowshipTag])
 }

@@ -32,6 +32,17 @@ export class LogbookDB extends Dexie {
       sync_queue: '++id, table, createdAt',
       sync_meta: 'table',
     })
+
+    this.version(2).stores({
+      cases: 'id, user_id, status, admit_date, role, hpe_status, updated_at',
+      case_entries: 'id, case_id, user_id, entry_date, logged_at, updated_at',
+      complication_types: 'id, user_id, label',
+      opd_entries: 'id, user_id, procedure_type, entry_date, gdm_next_visit_date, ectopic_next_hcg_date, usg_followup_date, contraception_due_date, hpe_status, updated_at',
+      attachments: 'id, entry_id, opd_entry_id, uploadStatus',
+      push_subscriptions: 'id, user_id, endpoint',
+      sync_queue: '++id, table, createdAt',
+      sync_meta: 'table',
+    })
   }
 }
 

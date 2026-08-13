@@ -8,11 +8,40 @@ function csvEscape(value: string): string {
 }
 
 export function rowsToCsv(rows: ExportRow[]): string {
-  const header = ['Date', 'Patient Ref', 'Diagnosis/Procedure', 'Findings/Outcome', 'Complications']
+  const header = [
+    'Date',
+    'Mode',
+    'Patient Ref',
+    'Patient Name',
+    'Age',
+    'Diagnosis',
+    'Procedure Performed',
+    'Surgical Role',
+    'Fellowship Tag',
+    'Findings / Outcome',
+    'Complications',
+    'HPE Status / Notes',
+  ]
+
   const lines = [header.map(csvEscape).join(',')]
   for (const r of rows) {
     lines.push(
-      [r.date, r.patientRef, r.diagnosisProcedure, r.findingsOutcome, r.complications].map(csvEscape).join(','),
+      [
+        r.date,
+        r.mode,
+        r.patientRef,
+        r.patientName,
+        r.patientAge,
+        r.diagnosis,
+        r.procedure,
+        r.role,
+        r.fellowshipTag,
+        r.findingsOutcome,
+        r.complications,
+        r.hpeStatus,
+      ]
+        .map(csvEscape)
+        .join(','),
     )
   }
   return lines.join('\n')
